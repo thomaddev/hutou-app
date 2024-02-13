@@ -10,25 +10,25 @@ const RotateSavingGroupSchema: Schema = new Schema(
     period: {
       type: String,
       enum: ["day", "week", "month"],
-      required: true,
+      // required: true,
     },
     playerCount: {
       type: Number,
-      required: true,
+      // required: true,
     },
     rotateAmount: {
       type: Number,
-      required: true,
+      // required: true,
       default: 100,
     },
     minBitAmount: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0,
     },
     maxBitAmount: {
       type: Number,
-      required: true,
+      // required: true,
       default: 0,
     },
     systemRandomPlayer: {
@@ -37,7 +37,7 @@ const RotateSavingGroupSchema: Schema = new Schema(
     },
     status: {
       type: String,
-      enum: ["OPENED", "PLAYING", "CLOSED"],
+      enum: ["CREATED", "APPROVED", "PLAYING", "CLOSED"],
       default: "OPENED",
     },
     startPlayDate: {
@@ -49,7 +49,7 @@ const RotateSavingGroupSchema: Schema = new Schema(
         time: { type: String }, // Format: HH:MM (24-hour format)
         dayOfMonth: { type: String, enum: ["begin", "end"] }, // For monthly period
       },
-      required: true,
+      // required: true,
     },
     players: [{ type: Schema.Types.ObjectId, ref: PlayerModel }],
   },
