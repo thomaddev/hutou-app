@@ -1,5 +1,6 @@
 import dbConnect from "@/app/libs/mongodb";
-import PlayerModel from "@/app/api/models/player";
+import PlayerModel from "@/app/api/services/player/player.model";
+import { createPlayer } from "../services/player/player.service";
 
 export async function GET() {
   try {
@@ -7,7 +8,6 @@ export async function GET() {
     const players = await PlayerModel.find({});
     return Response.json({ data: players, message: "Get players successful" });
   } catch (error) {
-    console.log(error);
     return Response.json({ error });
   }
 }
@@ -16,13 +16,13 @@ export async function POST(request: Request) {
   try {
     await dbConnect();
     const res = await request.json();
-    const newPlayer = await PlayerModel.create(res);
+    const newPlayer = createPlayer(res);
+    // const newPlayer = await PlayerModel.create(res);
     return Response.json({
       data: newPlayer,
       message: "Create player successful",
     });
   } catch (error) {
-    console.log(error);
     return Response.json({ error });
   }
 }

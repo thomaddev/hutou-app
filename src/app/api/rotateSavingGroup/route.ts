@@ -1,6 +1,6 @@
 
 import dbConnect from "@/app/libs/mongodb";
-import RotateSavingGroupModel from "@/app/api/models/rotate-saving-group";
+import RotateSavingGroupModel from "@/app/api/services/rotate-saving-group/rotate-saving-group.model";
 
 export async function GET() {
   try {
@@ -8,7 +8,6 @@ export async function GET() {
     const lists = await RotateSavingGroupModel.find();
     return Response.json({ data: lists, message: "Get players successful" });
   } catch (error) {
-    console.log(error);
     return Response.json({ error });
   }
 }
@@ -23,7 +22,6 @@ export async function POST(request: Request) {
       message: "Create Rotate saving group successful",
     });
   } catch (error) {
-    console.log(error);
     return Response.json({ error: error.message });
   }
 }

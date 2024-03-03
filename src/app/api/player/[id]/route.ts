@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import dbConnect from "@/app/libs/mongodb";
-import PlayerModel from "@/app/api/models/player";
+import PlayerModel from "@/app/api/services/player/player.model";
 
 export async function GET(
   request: Request,

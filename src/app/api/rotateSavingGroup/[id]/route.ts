@@ -1,5 +1,6 @@
 import dbConnect from "@/app/libs/mongodb";
-import RotateSavingGroupModel from "@/app/api/models/rotate-saving-group";
+import RotateSavingGroupModel from "@/app/api/services/rotate-saving-group/rotate-saving-group.model";
+import { startRoomPlay } from "../../services/rotate-saving-group/rotate-saving-group.service";
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
@@ -7,7 +8,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const player = await RotateSavingGroupModel.findById(params.id).populate("ownerId", ["playerName"]);
     return Response.json({ data: player, message: "Get player successful" });
   } catch (error) {
-    console.log(error);
     return Response.json({ error });
   }
 }
@@ -17,15 +17,26 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     await dbConnect();
     const group = await RotateSavingGroupModel.findById(params.id);
     const res = await request.json();
-    group.status = res.status;
-    group.bit_time = res.bit_time
+
+    group.period = res.period || group.period;
+    group.rotateAmount = res.rotateAmount || group.rotateAmount;
+    group.minBitAmount = res.minBitAmount || group.minBitAmount;
+    group.maxBitAmount = res.maxBitAmount || group.maxBitAmount;
+    group.systemRandomPlayer = res.systemRandomPlayer || group.systemRandomPlayer;
+    group.roomStatus = res.status || group.status;
+    group.bitTime = res.bitTime || group.bitTime;
+    group.startPlayDate = res.startPlayDate || group.startPlayDate;
+    
     const groupUpdated = await group.save();
+
+    // // For Test start
+    // startRoomPlay(groupUpdated);
+
     return Response.json({
       data: groupUpdated,
-      message: `Update player  successful`,
+      message: `Update Group  successful`,
     });
   } catch (error) {
-    console.log(error);
     return Response.json({ error });
   }
 }
