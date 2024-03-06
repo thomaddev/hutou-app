@@ -3,8 +3,9 @@ import { getJobs } from "../services/job-schedule/job-schedule.service";
 
 export async function GET() {
   try {
+    const data = await getJobs();
     return Response.json({
-      data: getJobs(),
+      data,
     });
   } catch (error) {
     return Response.json({ error });

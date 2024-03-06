@@ -63,6 +63,7 @@ const RotateSavingGroupSchema: Schema = new Schema(
 );
 
 export interface IRotateSavingGroup {
+  _id: string;
   ownerId: PlayerGroup;
   groupLineId?: string;
   period?: Period;

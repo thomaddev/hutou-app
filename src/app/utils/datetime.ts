@@ -13,3 +13,10 @@ export function convertStringToDate(date: dayjs.Dayjs | string | undefined, form
   if (!convertToDate.isValid) return "";
   return convertToDate;
 }
+
+export function convertTimeStringToHourMinute(time: string) {
+  const regex = /^(?:[01]\d|2[0-3]):(?:[0-5]\d)$/;
+  if (!regex.test(time)) return null;
+  const [hours, minutes] = time.split(":");
+  return { h: hours, m: minutes };
+}

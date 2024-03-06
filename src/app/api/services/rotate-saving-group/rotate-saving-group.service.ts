@@ -110,7 +110,7 @@ export const startRoomPlay = (group: IRotateSavingGroup) => {
       //   console.log("This job was supposed to run at " + fireDate + ", but actually ran at " + new Date());
       // });
 
-      startJob();
+      startJob(group);
 
       // const jobs = schedule.scheduledJobs;
       // console.log({ job });
