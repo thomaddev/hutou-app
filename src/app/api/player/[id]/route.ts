@@ -25,7 +25,7 @@ export async function PATCH(
     const updatePlayer = await PlayerModel.findByIdAndUpdate(params.id, res);
     return Response.json({
       data: updatePlayer,
-      message: `Update player ${updatePlayer.playerName} successful`,
+      message: `Update player ${updatePlayer?.playerName} successful`,
     });
   } catch (error) {
     return Response.json({ error });
@@ -42,7 +42,7 @@ export async function DELETE(
     const deletelayer = await PlayerModel.findByIdAndDelete(params.id);
     return Response.json({
       data: deletelayer,
-      message: `Delete player ${deletelayer.playerName} successful`,
+      message: `Delete player ${deletelayer?.playerName} successful`,
     });
   } catch (error) {
     return Response.json({ error });

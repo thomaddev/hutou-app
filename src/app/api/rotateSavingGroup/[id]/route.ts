@@ -16,17 +16,17 @@ export async function PATCH(request: Request, { params }: { params: { id: string
   try {
     await dbConnect();
     const group = await RotateSavingGroupModel.findById(params.id);
+    if (!group) throw new Error("Not found group");
     const res = await request.json();
-
     group.period = res.period || group.period;
     group.rotateAmount = res.rotateAmount || group.rotateAmount;
     group.minBitAmount = res.minBitAmount || group.minBitAmount;
     group.maxBitAmount = res.maxBitAmount || group.maxBitAmount;
     group.systemRandomPlayer = res.systemRandomPlayer || group.systemRandomPlayer;
-    group.roomStatus = res.status || group.status;
+    group.roomStatus = res.status || group.roomStatus;
     group.bitTime = res.bitTime || group.bitTime;
     group.startPlayDate = res.startPlayDate || group.startPlayDate;
-    
+
     const groupUpdated = await group.save();
 
     // // For Test start

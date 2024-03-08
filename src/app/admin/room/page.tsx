@@ -16,7 +16,7 @@ export default function Room() {
   const [data, setData] = useState<UserType[]>([]);
   const [form] = Form.useForm<RotateSaingGroupType>();
 
-  const columns = useMemo<TableProps<RotateSaingGroupType>["columns"]>(() => {
+  const columns = useMemo<TableProps<any>["columns"]>(() => {
     return [
       {
         title: "ownerId",
@@ -82,7 +82,7 @@ export default function Room() {
         ),
       },
     ];
-  }, []); // Empty dependency array ensures this constant is memoized once
+  }, []);
 
   const fetchRoom = () => {
     fetch(`${process.env.NEXT_PUBLIC_API_PATH}/${ROOM_PATH}`)

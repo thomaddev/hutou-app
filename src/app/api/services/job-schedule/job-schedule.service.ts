@@ -1,21 +1,20 @@
 import Agenda from "agenda";
 import dayjs from "dayjs";
 import schedule from "node-schedule";
-import { IRotateSavingGroup } from "../rotate-saving-group/rotate-saving-group.model";
+import { IRotateSavingGroup, RotateSavingGroupDocument } from "../rotate-saving-group/rotate-saving-group.model";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { Period } from "@/app/constants/enum";
 import { convertTimeStringToHourMinute } from "@/app/utils/datetime";
 
-const agenda = new Agenda({ db: { address: process.env.MONGODB_URI } });
+const agenda = new Agenda({ db: { address: process.env.MONGODB_URI ?? "" } });
 const TIME_ZONE = "Asia/Bangkok";
 dayjs.extend(utc);
 dayjs.extend(timezone);
-export async function startJob(group: IRotateSavingGroup) {
+export async function startJob(group: RotateSavingGroupDocument) {
   const now = dayjs();
   const fiveMinutesLater = now.add(1, "minute").toDate();
 
-  // console.log(group);
   const groupId = group._id;
   const period = group.period;
   const jobAlertName = `job-alert-${groupId}-${period}`;

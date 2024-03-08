@@ -15,7 +15,8 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
     if (status in StatusGroup) {
       await dbConnect();
       const group = await RotateSavingGroupModel.findById(params.id);
-      group.roomStatus = status || group.status;
+      if (!group) throw new Error("Not found group");
+      group.roomStatus = (status as StatusGroup) || group.roomStatus;
       const groupUpdated = await group.save();
 
       // For Test start

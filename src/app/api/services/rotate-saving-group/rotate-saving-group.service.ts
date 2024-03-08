@@ -1,5 +1,5 @@
 import dbConnect from "@/app/libs/mongodb";
-import RotateSavingGroupModel, { IRotateSavingGroup, PlayerGroup, RotateSavingGroupDocument } from "./rotate-saving-group.model";
+import RotateSavingGroupModel, { IRotateSavingGroup, RotateSavingGroupDocument } from "./rotate-saving-group.model";
 import { StatusGroup } from "@/app/constants/enum";
 import { IPlayer } from "../player/player.model";
 import { createPlayer } from "../player/player.service";
@@ -7,6 +7,7 @@ import { pushMessageToGroup } from "../line/line.service";
 import schedule from "node-schedule";
 import dayjs from "dayjs";
 import { startJob } from "../job-schedule/job-schedule.service";
+import { PlayerGroup } from "@/app/interfaces/global.interface";
 
 export async function createGroup(rotateSavingGroupData: IRotateSavingGroup): Promise<IRotateSavingGroup> {
   try {
@@ -92,7 +93,7 @@ const getUniquePlayers = (players: PlayerGroup[]) => {
   return Array.from(uniqueMap.values());
 };
 
-export const startRoomPlay = (group: IRotateSavingGroup) => {
+export const startRoomPlay = (group: RotateSavingGroupDocument) => {
   console.log("PREAPRE START JOB!")
   if (group.roomStatus === StatusGroup.PLAYING) {
     if (group.groupLineId) {

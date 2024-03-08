@@ -1,6 +1,7 @@
 import { FlexBubble, FlexComponent, FlexMessage } from "@line/bot-sdk/dist/types";
-import { IRotateSavingGroup, PlayerGroup } from "../services/rotate-saving-group/rotate-saving-group.model";
+import { IRotateSavingGroup } from "../services/rotate-saving-group/rotate-saving-group.model";
 import { group } from "console";
+import { PlayerGroup } from "@/app/interfaces/global.interface";
 
 export const viewGroupInfo = (data: IRotateSavingGroup): FlexBubble => {
   return {

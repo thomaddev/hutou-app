@@ -63,7 +63,6 @@ const RotateSavingGroupSchema: Schema = new Schema(
 );
 
 export interface IRotateSavingGroup {
-  _id: string;
   ownerId: PlayerGroup;
   groupLineId?: string;
   period?: Period;
@@ -78,7 +77,8 @@ export interface IRotateSavingGroup {
   players?: PlayerGroup[];
 }
 
-const RotateSavingGroupModel = models.RotateSavingGroup || model("RotateSavingGroup", RotateSavingGroupSchema);
+const RotateSavingGroupModel = model<IRotateSavingGroup>("RotateSavingGroup", RotateSavingGroupSchema);
+
 export interface RotateSavingGroupDocument extends IRotateSavingGroup, Document {}
 
 export default RotateSavingGroupModel;

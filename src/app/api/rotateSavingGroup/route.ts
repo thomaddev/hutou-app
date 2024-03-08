@@ -21,7 +21,7 @@ export async function POST(request: Request) {
       data: result,
       message: "Create Rotate saving group successful",
     });
-  } catch (error) {
+  } catch (error: any) {
     return Response.json({ error: error.message });
   }
 }

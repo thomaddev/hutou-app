@@ -33,9 +33,7 @@ const PlayerSchema: Schema = new Schema(
   { timestamps: true }
 );
 
-
 export interface IPlayer {
-  _id?: Schema.Types.ObjectId;
   playerName?: string;
   displayName?: string;
   pictureUrl?: string;
@@ -45,8 +43,7 @@ export interface IPlayer {
   last_name?: string;
 }
 
-
-const PlayerModel = models.Player || model("Player", PlayerSchema);
+const PlayerModel = model<IPlayer>("Player", PlayerSchema);
 export interface PlayerDocument extends IPlayer, Document {}
 
 export default PlayerModel;
