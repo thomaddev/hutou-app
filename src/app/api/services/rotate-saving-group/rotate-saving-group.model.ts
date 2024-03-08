@@ -77,7 +77,7 @@ export interface IRotateSavingGroup {
   players?: PlayerGroup[];
 }
 
-const RotateSavingGroupModel = model<IRotateSavingGroup>("RotateSavingGroup", RotateSavingGroupSchema);
+const RotateSavingGroupModel = models.RotateSavingGroup || model<IRotateSavingGroup>("RotateSavingGroup", RotateSavingGroupSchema);
 
 export interface RotateSavingGroupDocument extends IRotateSavingGroup, Document {}
 

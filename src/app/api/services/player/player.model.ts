@@ -43,7 +43,7 @@ export interface IPlayer {
   last_name?: string;
 }
 
-const PlayerModel = model<IPlayer>("Player", PlayerSchema);
+const PlayerModel = models.Player || model<IPlayer>("Player", PlayerSchema);
 export interface PlayerDocument extends IPlayer, Document {}
 
 export default PlayerModel;
