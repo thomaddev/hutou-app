@@ -30,7 +30,8 @@ export async function startJob(group: RotateSavingGroupDocument) {
     const minites = Number(timeSplit?.m ?? 0);
     const scheduleTime = dayjs().tz(TIME_ZONE).set("hour", hour).set("minute", minites).set("second", 0).toDate();
 
-    // await agenda.start();
+    await agenda.start();
+    await agenda.schedule(scheduleTime, jobAlertName, { group });
     // await agenda.every(getInterval(group.period), jobAlertName, { group }, { timezone: TIME_ZONE, skipImmediate: true, startDate: scheduleTime });
     // await agenda.every("1 minute", jobAlertName, { group }, { timezone: TIME_ZONE, skipImmediate: true, startDate: dayjs().tz(TIME_ZONE).toDate() });
   }
