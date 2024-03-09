@@ -1,0 +1,6 @@
+# serverless.yml
+name: hutou-app
+component: "@sls-next/serverless-component@latest"
+inputs:
+  nextConfigDir: "src"
+  policy: "arn:aws:iam::aws:policy/AWSLambda_FullAccess"

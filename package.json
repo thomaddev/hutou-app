@@ -6,11 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "serverless": "next build && serverless"
   },
   "dependencies": {
     "@ant-design/nextjs-registry": "^1.0.0",
     "@line/bot-sdk": "^8.4.0",
+    "@sls-next/serverless-component": "^3.7.0",
     "agenda": "^5.0.0",
     "antd": "^5.14.2",
     "dateformat": "^5.0.3",
