@@ -6,6 +6,7 @@ import { IRotateSavingGroup } from "../services/rotate-saving-group/rotate-savin
 import { addPlayersToGroup, createGroup, getOneGroup } from "../services/rotate-saving-group/rotate-saving-group.service";
 import { StatusGroup } from "@/app/constants/enum";
 import { viewGroupInfo } from "../line-views/flex-bubbles";
+import axios, { AxiosRequestConfig } from "axios";
 
 new line.messagingApi.MessagingApiClient({
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN as string,
@@ -17,6 +18,48 @@ line.middleware({
 const client = new line.messagingApi.MessagingApiClient({
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN as string,
 });
+const LINE_CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
+const LINE_API_ENDPOINT = "https://api.line.me/v2/bot/message";
+
+async function sendLineRequest(options: AxiosRequestConfig): Promise<void> {
+  try {
+    await axios(options);
+  } catch (error) {
+    throw new Error("Failed to send request to Line API");
+  }
+}
+
+const replyMessage2 = (replyToken: string, messages: any[]) => {
+  const requestOptions: AxiosRequestConfig = {
+    method: "post",
+    url: LINE_API_ENDPOINT + "/reply",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
+    },
+    data: {
+      replyToken,
+      messages,
+    },
+  };
+  sendLineRequest(requestOptions);
+};
+
+const pushMessage2 = (to: string, messages: []) => {
+  const requestOptions: AxiosRequestConfig = {
+    method: "post",
+    url: LINE_API_ENDPOINT + "/push",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
+    },
+    data: {
+      to,
+      messages,
+    },
+  };
+  sendLineRequest(requestOptions);
+};
 
 export async function POST(request: Request) {
   const res = await request.json();
@@ -34,58 +77,96 @@ export async function POST(request: Request) {
         const groupData = await getOneGroup(groupId);
         console.log({ groupData });
         console.log("Start client send message");
-        client
-          .pushMessage({
-            to: groupId,
-            messages: [
-              {
-                type: "flex",
-                altText: "This is a Flex Message",
-                contents: {
-                  ...viewGroupInfo(groupData),
-                },
-              },
-            ],
-          })
-          .then(() => {
-            console.log("send success");
-          })
-          .catch(() => {
-            console.log("send catch error");
-          });
-        console.log("end client send message");
-      } else if (messageText === "help") {
-        client.pushMessage({
-          to: groupId,
-          messages: [
-            {
-              type: "text",
-              text: "ต้องการช่วยเหลืออะไร เลือกเมนูลัดด้านบนได้เลยงับ",
-              quickReply: {
-                items: [
-                  {
-                    type: "action",
-                    imageUrl: "https://cdn1.iconfinder.com/data/icons/basic-ui-169/32/Login-512.png",
-                    action: {
-                      type: "message",
-                      label: "ลงทะเบียนเปิดห้อง",
-                      text: "ลงทะเบียนเปิดห้อง",
-                    },
-                  },
-                  {
-                    type: "action",
-                    imageUrl: "https://cdn1.iconfinder.com/data/icons/unicons-line-vol-2/24/chat-info-512.png",
-                    action: {
-                      type: "message",
-                      label: "ดูข้อมูลห้อง",
-                      text: "ดูข้อมูลห้อง",
-                    },
-                  },
-                ],
-              },
+        const messages = [
+          {
+            type: "flex",
+            altText: "This is a Flex Message",
+            contents: {
+              ...viewGroupInfo(groupData),
             },
-          ],
-        });
+          },
+        ];
+        replyMessage2(replyToken, messages);
+        // client
+        //   .pushMessage({
+        //     to: groupId,
+        //     messages: [
+        //       {
+        //         type: "flex",
+        //         altText: "This is a Flex Message",
+        //         contents: {
+        //           ...viewGroupInfo(groupData),
+        //         },
+        //       },
+        //     ],
+        //   })
+        //   .then(() => {
+        //     console.log("send success");
+        //   })
+        //   .catch(() => {
+        //     console.log("send catch error");
+        //   });
+      } else if (messageText === "help") {
+        const messages = [
+          {
+            type: "text",
+            text: "ต้องการช่วยเหลืออะไร เลือกเมนูลัดด้านบนได้เลยงับ",
+            quickReply: {
+              items: [
+                {
+                  type: "action",
+                  imageUrl: "https://cdn1.iconfinder.com/data/icons/basic-ui-169/32/Login-512.png",
+                  action: {
+                    type: "message",
+                    label: "ลงทะเบียนเปิดห้อง",
+                    text: "ลงทะเบียนเปิดห้อง",
+                  },
+                },
+                {
+                  type: "action",
+                  imageUrl: "https://cdn1.iconfinder.com/data/icons/unicons-line-vol-2/24/chat-info-512.png",
+                  action: {
+                    type: "message",
+                    label: "ดูข้อมูลห้อง",
+                    text: "ดูข้อมูลห้อง",
+                  },
+                },
+              ],
+            },
+          },
+        ];
+        replyMessage2(replyToken, messages);
+        // client.pushMessage({
+        //   to: groupId,
+        //   messages: [
+        //     {
+        //       type: "text",
+        //       text: "ต้องการช่วยเหลืออะไร เลือกเมนูลัดด้านบนได้เลยงับ",
+        //       quickReply: {
+        //         items: [
+        //           {
+        //             type: "action",
+        //             imageUrl: "https://cdn1.iconfinder.com/data/icons/basic-ui-169/32/Login-512.png",
+        //             action: {
+        //               type: "message",
+        //               label: "ลงทะเบียนเปิดห้อง",
+        //               text: "ลงทะเบียนเปิดห้อง",
+        //             },
+        //           },
+        //           {
+        //             type: "action",
+        //             imageUrl: "https://cdn1.iconfinder.com/data/icons/unicons-line-vol-2/24/chat-info-512.png",
+        //             action: {
+        //               type: "message",
+        //               label: "ดูข้อมูลห้อง",
+        //               text: "ดูข้อมูลห้อง",
+        //             },
+        //           },
+        //         ],
+        //       },
+        //     },
+        //   ],
+        // });
       } else if (messageText === "ดูข้อมูลแบบดิบๆจ่ะแม่") {
       } else {
       }
