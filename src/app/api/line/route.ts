@@ -14,17 +14,17 @@ line.middleware({
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN as string,
   channelSecret: process.env.CHANNEL_SECRET as string,
 });
+const client = new line.messagingApi.MessagingApiClient({
+  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN as string,
+});
 
 export async function POST(request: Request) {
   const res = await request.json();
   const typeMessage = res.events[0]?.type;
   const replyToken = res.events[0]?.replyToken;
   const { userId, groupId, type } = res.events[0]?.source;
-  const client = new line.messagingApi.MessagingApiClient({
-    channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN as string,
-  });
   try {
-    console.log(res)
+    console.log(res);
     if (typeMessage === "message") {
       const messageText = res.events[0].message.text;
       const profile = await client.getProfile(userId);
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
         regsiterRoom(replyToken, res.events[0]?.source, profile);
       } else if (messageText === "ดูข้อมูลห้อง") {
         const groupData = await getOneGroup(groupId);
-        console.log({groupData})
+        console.log({ groupData });
         client.replyMessage({
           replyToken,
           messages: [
@@ -78,16 +78,13 @@ export async function POST(request: Request) {
           ],
         });
       } else if (messageText === "ดูข้อมูลแบบดิบๆจ่ะแม่") {
-        
-      }  else {
-       
+      } else {
       }
     } else if (typeMessage === "memberLeft") {
       const left = res.events[0].left;
 
       // check IF Room playing can not kick anyone only
       // const group = await getOneGroup(groupId);
-
     } else if (typeMessage === "memberJoined") {
       const joined = res.events[0].joined;
       joined.members.forEach(async (element: { type: string; userId: string }) => {
