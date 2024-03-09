@@ -33,18 +33,27 @@ export async function POST(request: Request) {
       } else if (messageText === "ดูข้อมูลห้อง") {
         const groupData = await getOneGroup(groupId);
         console.log({ groupData });
-        client.replyMessage({
-          replyToken,
-          messages: [
-            {
-              type: "flex",
-              altText: "This is a Flex Message",
-              contents: {
-                ...viewGroupInfo(groupData),
+        console.log("Start client send message");
+        client
+          .replyMessage({
+            replyToken,
+            messages: [
+              {
+                type: "flex",
+                altText: "This is a Flex Message",
+                contents: {
+                  ...viewGroupInfo(groupData),
+                },
               },
-            },
-          ],
-        });
+            ],
+          })
+          .then(() => {
+            console.log("send success");
+          })
+          .catch(() => {
+            console.log("send catch error");
+          });
+        console.log("end client send message");
       } else if (messageText === "help") {
         client.pushMessage({
           to: groupId,
