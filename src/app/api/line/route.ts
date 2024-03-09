@@ -32,6 +32,7 @@ export async function POST(request: Request) {
         regsiterRoom(replyToken, res.events[0]?.source, profile);
       } else if (messageText === "ดูข้อมูลห้อง") {
         const groupData = await getOneGroup(groupId);
+        console.log({groupData})
         client.replyMessage({
           replyToken,
           messages: [
