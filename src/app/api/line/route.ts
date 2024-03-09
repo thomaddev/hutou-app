@@ -34,6 +34,15 @@ export async function POST(request: Request) {
         const groupData = await getOneGroup(groupId);
         console.log({ groupData });
         console.log("Start client send message");
+        client.replyMessage({
+          replyToken,
+          messages: [
+            {
+              type: "text",
+              text: "Test",
+            },
+          ],
+        });
         client
           .replyMessage({
             replyToken,
@@ -55,8 +64,8 @@ export async function POST(request: Request) {
           });
         console.log("end client send message");
       } else if (messageText === "help") {
-        client.pushMessage({
-          to: groupId,
+        client.replyMessage({
+          replyToken,
           messages: [
             {
               type: "text",
