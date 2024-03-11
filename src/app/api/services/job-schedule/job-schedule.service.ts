@@ -6,6 +6,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { Period } from "@/app/constants/enum";
 import { convertTimeStringToHourMinute } from "@/app/utils/datetime";
+import { pushMessageToGroup } from "../line/line.service";
 
 const agenda = new Agenda({ db: { address: process.env.MONGODB_URI ?? "" } });
 const TIME_ZONE = "Asia/Bangkok";
@@ -13,67 +14,56 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 export async function startJob(group: RotateSavingGroupDocument) {
   const now = dayjs();
-  const fiveMinutesLater = now.add(1, "minute").toDate();
 
   const groupId = group._id;
   const period = group.period;
-  const jobAlertName = `job-alert-${groupId}-${period}`;
+  const jobTimeBit = `job-time-bit-${groupId}-${period}`;
+  const jobTimeBitBefore = `job-time-bit-before-${groupId}-${period}`;
 
   if (group.period && group.bitTime?.time) {
     const timeSplit = convertTimeStringToHourMinute(group.bitTime.time.toString());
+    const timeBefore = findTimeBefore(group.bitTime.time.toString(), 5);
+    // const timeSplit = convertTimeStringToHourMinute("22:31");
+    // const timeBefore = findTimeBefore("22:31", 5);
 
-    // Set up job processing
-    agenda.define<IRotateSavingGroup>(jobAlertName, async (job: any) => {
-      console.log(`~RUN~ ${jobAlertName}`, job?.attrs?._id);
+    const timeBeforeSplit = convertTimeStringToHourMinute(timeBefore);
+
+    // Set up Job Time Bit
+    agenda.define<IRotateSavingGroup>(jobTimeBit, async (job: any) => {
+      const group: RotateSavingGroupDocument = job?.attrs?.data?.group;
+      console.log({ job, group });
+      if (group.groupLineId) {
+        console.log(`~RUN~ push message successful ${jobTimeBit}`, group._id);
+        pushMessageToGroup(group.groupLineId, "เริ่มต้น Bit");
+      } else {
+        console.log(`~RUN~ push message fail! ${jobTimeBit}`, group._id);
+      }
     });
+
+    // Set up Job Time Bit before 5 minite
+    agenda.define<IRotateSavingGroup>(jobTimeBitBefore, async (job: any) => {
+      const group: RotateSavingGroupDocument = job?.attrs?.data?.group;
+      console.log({ job, group });
+      if (group.groupLineId) {
+        console.log(`~RUN~ push message successful ${jobTimeBitBefore}`, group._id);
+        pushMessageToGroup(group.groupLineId, "อักห้านาทีจะถึงเวลา Bit");
+      } else {
+        console.log(`~RUN~ push message fail! ${jobTimeBitBefore}`, group._id);
+      }
+    });
+
     const hour = Number(timeSplit?.h ?? 0);
     const minites = Number(timeSplit?.m ?? 0);
-    const scheduleTime = dayjs().tz(TIME_ZONE).set("hour", hour).set("minute", minites).set("second", 0).toDate();
-
+    const hourBefore = Number(timeBeforeSplit?.h ?? 0);
+    const minitesBefore = Number(timeBeforeSplit?.m ?? 0);
     await agenda.start();
-    await agenda.schedule(scheduleTime, jobAlertName, { group });
-    // await agenda.every(getInterval(group.period), jobAlertName, { group }, { timezone: TIME_ZONE, skipImmediate: true, startDate: scheduleTime });
-    // await agenda.every("1 minute", jobAlertName, { group }, { timezone: TIME_ZONE, skipImmediate: true, startDate: dayjs().tz(TIME_ZONE).toDate() });
-  }
-
-  // await agenda.schedule("1 minute", jobAlertName, {
-  //   group,
-  // });
-  //   await agenda.define("testJob1", async (job: any) => {
-  //     const contactDetails = job.attrs.data.contactDetails; // type Contact
-  //   });
-
-  //   await agenda.now("testJob1", {
-  //     contactDetails: {
-  //       test: "134",
-  //     }, // required attr
-  //   });
-
-  //   await agenda.schedule("in 1 minutes", "testJob1", {
-  //     contactDetails: {
-  //       test: "134",
-  //     }, // required attr
-  //   });
-  //   const job = schedule.scheduleJob("testJob1", fiveMinutesLater, function (fireDate) {
-  //
-  //   });
-}
-
-function getInterval(period: Period): string {
-  switch (period) {
-    case Period.Day:
-      return "24 hours";
-    case Period.Week:
-      return "1 week";
-    case Period.Month:
-      return "1 month";
+    await agenda.every(`${minites} ${hour} */1 * *`, jobTimeBit, { group });
+    await agenda.every(`${minitesBefore} ${hourBefore} */1 * *`, jobTimeBitBefore, { group });
   }
 }
 
+// Job push message
 export async function getJobs() {
-  await clearAllJob();
-  return;
-
   try {
     const jobAlertName = `job-alert-65e08a31ef8d3a7ca072573c-day`;
     const jobs = await agenda.jobs();
@@ -90,6 +80,22 @@ export async function getJobs() {
   // return jobs;
 }
 
-export async function clearAllJob() {
+export async function purgeJobs() {
   await agenda.purge();
+}
+
+/**
+ * Finds the time that is a specified number of minutes before the given time.
+ * @param {string} time - The time string in "HH:mm" format.
+ * @param {number} minutes - The number of minutes to subtract from the given time.
+ * @returns {string} - The time string representing the time before the given time.
+ */
+function findTimeBefore(time: string, minutes: number): string {
+  const [hours, minutesStr] = time.split(":").map(Number);
+  let totalMinutes = hours * 60 + minutesStr;
+  totalMinutes -= minutes;
+  if (totalMinutes < 0) totalMinutes += 24 * 60;
+  const newHours = Math.floor(totalMinutes / 60);
+  const newMinutes = totalMinutes % 60;
+  return `${newHours.toString().padStart(2, "0")}:${newMinutes.toString().padStart(2, "0")}`;
 }
