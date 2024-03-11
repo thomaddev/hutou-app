@@ -20,10 +20,10 @@ const client = new line.messagingApi.MessagingApiClient({
 });
 
 export async function POST(request: Request) {
+  const res = await request.json();
+  const typeMessage = res.events[0]?.type;
+  const replyToken = res.events[0]?.replyToken;
   try {
-    const res = await request.json();
-    const typeMessage = res.events[0]?.type;
-    const replyToken = res.events[0]?.replyToken;
     const { userId, groupId, type } = res.events[0]?.source;
     if (typeMessage === "message") {
       const messageText = res.events[0].message.text;
@@ -95,15 +95,8 @@ export async function POST(request: Request) {
 
     return Response.json({ message: "Test for line send meesage" });
   } catch (error: any) {
-    client.replyMessage({
-      replyToken,
-      messages: [
-        {
-          type: "text",
-          text: error?.message,
-        },
-      ],
-    });
+    replyMessage(replyToken, error?.message);
+
     return Response.json({ error });
   }
 }
