@@ -18,55 +18,13 @@ line.middleware({
 const client = new line.messagingApi.MessagingApiClient({
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN as string,
 });
-const LINE_CHANNEL_ACCESS_TOKEN = process.env.CHANNEL_ACCESS_TOKEN;
-const LINE_API_ENDPOINT = "https://api.line.me/v2/bot/message";
-
-async function sendLineRequest(options: AxiosRequestConfig): Promise<void> {
-  try {
-    await axios(options);
-  } catch (error) {
-    throw new Error("Failed to send request to Line API");
-  }
-}
-
-const replyMessage2 = (replyToken: string, messages: any[]) => {
-  const requestOptions: AxiosRequestConfig = {
-    method: "post",
-    url: LINE_API_ENDPOINT + "/reply",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
-    },
-    data: {
-      replyToken,
-      messages,
-    },
-  };
-  sendLineRequest(requestOptions);
-};
-
-const pushMessage2 = (to: string, messages: []) => {
-  const requestOptions: AxiosRequestConfig = {
-    method: "post",
-    url: LINE_API_ENDPOINT + "/push",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
-    },
-    data: {
-      to,
-      messages,
-    },
-  };
-  sendLineRequest(requestOptions);
-};
 
 export async function POST(request: Request) {
-  const res = await request.json();
-  const typeMessage = res.events[0]?.type;
-  const replyToken = res.events[0]?.replyToken;
-  const { userId, groupId, type } = res.events[0]?.source;
   try {
+    const res = await request.json();
+    const typeMessage = res.events[0]?.type;
+    const replyToken = res.events[0]?.replyToken;
+    const { userId, groupId, type } = res.events[0]?.source;
     if (typeMessage === "message") {
       const messageText = res.events[0].message.text;
       const profile = await client.getProfile(userId);
